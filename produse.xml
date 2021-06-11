@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<catalog>
+   <produs id="1">
+      <id>1</id>
+      <denumire>Meniul zilei</denumire>
+      <pret>44.95</pret>     
+   </produs>
+   <produs id="2">
+      <id>2</id>
+      <denumire>Ciorba</denumire>
+      <pret>44.95</pret>     
+   </produs>
+</catalog>
