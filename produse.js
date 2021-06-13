@@ -9,46 +9,49 @@ WindowObject.document.close();
 
 }
 
-let xmlContent = '';
-let tableProdus = document.getElementById('produse');
-fetch('produse.xml').then((response)=> {
-    response.text().then((xml)=>{
-        xmlContent = xml;
+var produse = (function(){
+  let xmlContent = '';
+  let tableProdus = document.getElementById('produse');
+  fetch('produse.xml').then((response)=> {
+      response.text().then((xml)=>{
+          xmlContent = xml;
+  
+          let parser = new DOMParser();
+          let xmlDOM = parser.parseFromString(xmlContent, 'application/xml');
+          let produse = xmlDOM.querySelectorAll('produs');
+  
+          produse.forEach(produsXmlNode => {
+  
+              let row = document.createElement('tr');
+  
+              //id
+              let td = document.createElement('td');
+              td.innerText = produsXmlNode.children[0].innerHTML;
+              row.appendChild(td);
+  
+              //  denumire
+              td = document.createElement('td');
+              td.innerHTML = '<p class="card-title">'+produsXmlNode.children[1].innerHTML+'</p>';
+              row.appendChild(td);
+              
+              //pret
+              td = document.createElement('td');
+              td.innerHTML = '<p class="card-title">'+produsXmlNode.children[2].innerHTML+'</p>';
+              row.appendChild(td);
+  
+              //buton
+              td = document.createElement('td');
+              td.innerHTML = '<a href="#"  data-name="'+produsXmlNode.children[1].innerHTML+'" data-price="'+produsXmlNode.children[2].innerHTML+'" class="add-to-cart btn btn-primary">Adauga in cos</a>' ;
+              row.appendChild(td);
+  
+              tableProdus.children[1].appendChild(row);
+              
+          });
+          
+      });
+  }); 
 
-        let parser = new DOMParser();
-        let xmlDOM = parser.parseFromString(xmlContent, 'application/xml');
-        let produse = xmlDOM.querySelectorAll('produs');
-
-        produse.forEach(produsXmlNode => {
-
-            let row = document.createElement('tr');
-
-            //id
-            let td = document.createElement('td');
-            td.innerText = produsXmlNode.children[0].innerHTML;
-            row.appendChild(td);
-
-            //  denumire
-            td = document.createElement('td');
-            td.innerHTML = '<p class="card-title">'+produsXmlNode.children[1].innerHTML+'</p>';
-            row.appendChild(td);
-            
-            //pret
-            td = document.createElement('td');
-            td.innerHTML = '<p class="card-title">'+produsXmlNode.children[2].innerHTML+'</p>';
-            row.appendChild(td);
-
-            //buton
-            td = document.createElement('td');
-            td.innerHTML = '<a href="#"  data-name="'+produsXmlNode.children[1].innerHTML+'" data-price="'+produsXmlNode.children[2].innerHTML+'" class="add-to-cart btn btn-primary">Adauga in cos</a>' ;
-            row.appendChild(td);
-
-            tableProdus.children[1].appendChild(row);
-            
-        });
-        
-    });
-}); 
+})
 
 // ************************************************
 // Shopping Cart API
@@ -185,27 +188,38 @@ var shoppingCart = (function() {
     // saveCart : Function
     // loadCart : Function
     return obj;
+    
   })();
   
-  
+
+  produse();
   // *****************************************
   // Triggers / Events
   // ***************************************** 
   // Add item
-  $('.add-to-cart').click(function(event) {
+
+
+  $(document).on('click','.add-to-cart',function(event){
     event.preventDefault();
     var name = $(this).data('name');
     var price = Number($(this).data('price'));
     shoppingCart.addItemToCart(name, price, 1);
     displayCart();
-  });
-  
+
+  })
+
   // Clear items
-  $('.clear-cart').click(function() {
+
+  $(document).on('click','.clear-cart',function(){
     shoppingCart.clearCart();
     displayCart();
-  });
-  
+
+  })
+
+  //$('.clear-cart').click(function() {
+  //  shoppingCart.clearCart();
+  //  displayCart();
+  //});
   
   function displayCart() {
     var cartArray = shoppingCart.listCart();
@@ -213,7 +227,7 @@ var shoppingCart = (function() {
     for(var i in cartArray) {
       output += "<tr>"
         + "<td>" + cartArray[i].name + "</td>" 
-        + "<td>(" + cartArray[i].price + ")</td>"
+        + "<td>" + cartArray[i].price + "</td>"
         + "<td><div class='input-group'><button class='minus-item input-group-addon btn btn-primary' data-name=" + cartArray[i].name + ">-</button>"
         + "<input type='number' class='item-count form-control' data-name='" + cartArray[i].name + "' value='" + cartArray[i].count + "'>"
         + "<button class='plus-item btn btn-primary input-group-addon' data-name=" + cartArray[i].name + ">+</button></div></td>"
@@ -229,6 +243,7 @@ var shoppingCart = (function() {
   
   // Delete item button
   
+
   $('.show-cart').on("click", ".delete-item", function(event) {
     var name = $(this).data('name')
     shoppingCart.removeItemFromCartAll(name);
@@ -258,6 +273,6 @@ var shoppingCart = (function() {
   });
   
   displayCart();
-
+  
 
   
